@@ -1,3 +1,4 @@
+require('dotenv').config();
 /**
  * Cursor Background Agent for Slack Webhook
  * 
@@ -7,6 +8,7 @@
 const http = require('http');
 const https = require('https');
 const url = require('url');
+const { StringDecoder } = require('string_decoder');
 
 // Configuration
 const config = {
@@ -40,6 +42,29 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: error.message }));
       }
     });
+  } else if (req.method === 'POST' && req.url === '/interactivity') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      // Slack sends payload as application/x-www-form-urlencoded
+      const payload = JSON.parse(decodeURIComponent(body.replace('payload=', '')));
+      console.log('Received Slack interactivity:', payload);
+
+      // Example: Respond with a simple message (ephemeral)
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        response_type: 'ephemeral',
+        text: `You clicked: ${payload.actions[0].text.text || payload.actions[0].text}`
+      }));
+    });
+    return;
+  } else if (req.method === 'GET' && req.url.startsWith('/view/')) {
+    const id = req.url.split('/view/')[1];
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(`<html><body><h2>Prospect Details</h2><p>Prospect ID: <b>${id}</b></p><p>(You can customize this page to show more info.)</p></body></html>`);
+    return;
   } else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Not Found');
@@ -73,29 +98,42 @@ async function sendToSlack(data) {
       break;
       
     case 'prospect_alert':
-      message.text = `🎯 New Qualified Lead: ${details.clubName}`;
-      message.attachments = [{
-        color: '#36a64f',
-        fields: [
-          { title: 'Sport', value: details.sport, short: true },
-          { title: 'Location', value: details.location, short: true },
-          { title: 'Athletes', value: details.athletes, short: true },
-          { title: 'Score', value: `${details.score}/100`, short: true }
-        ],
-        actions: [
-          {
-            type: 'button',
-            text: 'Approve Outreach',
-            style: 'primary',
-            url: `http://localhost:${config.port}/approve/${details.id}`
-          },
-          {
-            type: 'button',
-            text: 'View Details',
-            url: `http://localhost:${config.port}/view/${details.id}`
+      message.text = undefined; // Block Kit uses blocks, not text
+      message.blocks = [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `:dart: *New Qualified Lead: ${details.clubName}*`
           }
-        ]
-      }];
+        },
+        {
+          type: 'section',
+          fields: [
+            { type: 'mrkdwn', text: `*Sport*\n${details.sport}` },
+            { type: 'mrkdwn', text: `*Location*\n${details.location}` },
+            { type: 'mrkdwn', text: `*Athletes*\n${details.athletes}` },
+            { type: 'mrkdwn', text: `*Score*\n${details.score}/100` }
+          ]
+        },
+        {
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: 'Approve Outreach' },
+              style: 'primary',
+              action_id: 'approve_outreach',
+              value: details.id
+            },
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: 'View Details' },
+              url: `https://ca3edd68739f.ngrok-free.app/view/${details.id}`
+            }
+          ]
+        }
+      ];
       break;
       
     case 'metrics_update':
