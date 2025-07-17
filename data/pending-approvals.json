@@ -1,0 +1,41 @@
+[
+  [
+    "lead_1752782325701_73swt7kra",
+    {
+      "leadData": {
+        "clubName": "Elite Soccer Academy California",
+        "sport": "soccer",
+        "location": "Los Angeles, CA",
+        "estimatedAthletes": 450,
+        "score": 85,
+        "priority": "High",
+        "competitionLevel": "National",
+        "facilities": 3,
+        "foundedYear": 2010,
+        "ageGroups": [
+          "Youth",
+          "High School",
+          "College Prep"
+        ],
+        "contactInfo": {
+          "email": "director@elitesoccerca.com",
+          "phone": "(555) 123-4567"
+        },
+        "website": "https://elitesoccerca.com",
+        "keyPersonnel": [
+          {
+            "name": "Sarah Johnson",
+            "role": "Director"
+          },
+          {
+            "name": "Mike Rodriguez",
+            "role": "Head Coach"
+          }
+        ],
+        "qualificationDate": "2025-07-17T19:58:45.701Z"
+      },
+      "createdAt": "2025-07-17T19:58:45.701Z",
+      "status": "pending"
+    }
+  ]
+]
