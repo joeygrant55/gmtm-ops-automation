@@ -1,0 +1,32 @@
+{
+  "name": "gmtm-ops-automation",
+  "version": "1.0.0",
+  "description": "GMTM Operations Automation - Modular automation framework for HubSpot, Slack, Gmail, and Notion integrations",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:mcp": "CLAUDE_CODE_RUNTIME=true node mcp-index.js",
+    "dev": "NODE_ENV=development node index.js",
+    "dev:mcp": "NODE_ENV=development CLAUDE_CODE_RUNTIME=true node mcp-index.js",
+    "email-processor": "node mcp-index.js --run-email-processor",
+    "revenue-tracker": "node mcp-index.js --run-revenue-tracker",
+    "sports-prospector": "node mcp-index.js --run-sports-prospector",
+    "bd-dashboard": "node mcp-index.js --run-bd-dashboard",
+    "run-all": "node mcp-index.js --run-all",
+    "demo": "node demo.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["automation", "hubspot", "slack", "gmail", "notion", "operations"],
+  "author": "GMTM Operations Team",
+  "license": "ISC",
+  "dependencies": {
+    "@hubspot/api-client": "^13.0.0",
+    "@notionhq/client": "^4.0.1",
+    "@slack/webhook": "^7.0.5",
+    "dotenv": "^17.2.0",
+    "googleapis": "^153.0.0",
+    "node-cron": "^4.2.1",
+    "puppeteer": "^24.14.0",
+    "winston": "^3.17.0"
+  }
+}
